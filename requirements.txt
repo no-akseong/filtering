@@ -1,0 +1,14 @@
+flask
+flask-sslify
+langchain
+openai
+sentence_transformers
+tiktoken
+requests
+chromadb
+duckduckgo-search
+beautifulsoup4
+chardet
+google-cloud-vision
+google-cloud-language
+PyKakao
