@@ -1,20 +1,17 @@
-import os
 from google.cloud import vision
 
-# JSON 키 파일의 경로 설정
-os.environ[
-    "GOOGLE_APPLICATION_CREDENTIALS"] = r'C:\Users\gram\Desktop\project\positive-word\spheric-bloom-400505-835efbd95c3c.json'
 
-
-def detect_image_obscenity(image_path):
+def detect_image_obscenity(img, is_file=False):
     """Google Cloud Vision API를 사용하여 이미지의 혐오 점수를 감지하고 유해 여부를 출력합니다."""
     client = vision.ImageAnnotatorClient()
 
-    with open(image_path, "rb") as image_file:
-        content = image_file.read()
+    if is_file:
+        with open(img, "rb") as image_file:
+            content = image_file.read()
+    else:
+        content = img
 
     image = vision.Image(content=content)
-
     response = client.safe_search_detection(image=image)
     safe_search = response.safe_search_annotation
 
@@ -25,10 +22,6 @@ def detect_image_obscenity(image_path):
     violence_likelihood = safe_search.violence
     racy_likelihood = safe_search.racy
 
-    # 혐오 점수가 "LIKELY" 또는 "VERY_LIKELY"인 경우 이미지를 유해하다고 판단
-    harmful = (adult_likelihood >= 4 or medical_likelihood >= 4 or spoof_likelihood >= 4 or
-               violence_likelihood >= 3 or racy_likelihood >= 3)
-
     # 결과 반환
     return {
         "adult": adult_likelihood,
@@ -36,7 +29,6 @@ def detect_image_obscenity(image_path):
         "spoof": spoof_likelihood,
         "violence": violence_likelihood,
         "racy": racy_likelihood,
-        "harmful": harmful,
     }
 
 
@@ -52,5 +44,3 @@ if __name__ == "__main__":
     print(f"Spoof: {result['spoof']}")  # 사기
     print(f"Violence: {result['violence']}")  # 폭력
     print(f"Racy: {result['racy']}")  # 선정
-
-    print("Image Harmful: ", result['harmful'])

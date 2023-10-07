@@ -1,18 +1,8 @@
-# 필요한 라이브러리 가져오기
+import val
 from google.cloud import language_v1  # Google Cloud Natural Language API 사용을 위한 라이브러리
 import os  # 환경 변수 설정을 위한 라이브러리
 import requests  # HTTP 요청을 보내기 위한 라이브러리
 import json  # JSON 데이터 처리를 위한 라이브러리
-
-# Google Cloud Natural Language API 설정
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r'C:\Users\gram\Desktop\project\fiitering\filltering\spheric-bloom-400505-835efbd95c3c.json'  # JSON 키 파일의 경로 설정
-client = language_v1.LanguageServiceClient()  # Natural Language API 클라이언트 인스턴스 생성
-
-# KoGPT API 설정
-
-with open(r'C:\Users\gram\Desktop\project\fiitering\filltering\rest_api_key.txt', 'r') as key_file:
-    REST_API_KEY = key_file.read()
-  # KoGPT API의 인증 키
 
 # KoGPT API를 호출하는 함수 정의
 def kogpt_api(prompt, max_tokens=10, temperature=0.7, top_p=1.0, n=1):
@@ -26,7 +16,7 @@ def kogpt_api(prompt, max_tokens=10, temperature=0.7, top_p=1.0, n=1):
             'n': n
         },
         headers={
-            'Authorization': 'KakaoAK ' + REST_API_KEY,
+            'Authorization': 'KakaoAK ' + val.REST_API_KEY,
             'Content-Type': 'application/json'
         }
     )
@@ -35,6 +25,7 @@ def kogpt_api(prompt, max_tokens=10, temperature=0.7, top_p=1.0, n=1):
 
 # 텍스트 어조를 개선하는 함수 정의
 def refine_tone(text):
+    client = language_v1.LanguageServiceClient()  # Natural Language API 클라이언트 인스턴스 생성
     # Google Cloud Natural Language API를 사용하여 텍스트의 감정을 감지합니다.
     document = language_v1.types.Document(content=text, type_=language_v1.types.Document.Type.PLAIN_TEXT)
     sentiment = client.analyze_sentiment(request={"document": document}).document_sentiment

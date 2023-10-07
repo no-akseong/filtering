@@ -15,6 +15,8 @@ LOG_DIR = join(ROOT_DIR, "logs")
 # api 키
 OPENAI_API_KEY_FILE = join(ROOT_DIR, "openai_api_key.txt")
 OPENAI_API_KEY = open(OPENAI_API_KEY_FILE).read()
+GOOGLE_CLOUD_API_KEY = join(ROOT_DIR, r"spheric-bloom-400505-835efbd95c3c.json")
+REST_API_KEY = join(ROOT_DIR, r"rest_api_key.txt")
 
 # 리소스
 RES_DIR = join(ROOT_DIR, "res")

@@ -1,10 +1,14 @@
 import os
 
+import openai
 from flask import Flask, send_file, request, jsonify
+from google.cloud import language_v1
 
 import n2p.utils as utils
 import val
 from n2p.bot.agent import agent
+from n2p.img.safe_search import detect_image_obscenity
+from n2p.text.chat_gpt import sentiment_score, refine_text
 from n2p.utils import i, d
 
 app = Flask(__name__)
@@ -31,9 +35,59 @@ def chat():
     return jsonify(response), 200
 
 
+@app.route('/sentiment', methods=['POST'])
+def check_sentiment():
+    """
+    문장의 감정 점수를 분석해줍니다.
+    """
+    data = request.get_json()
+    d(f"/check_sentiment: {data}")
+
+    # 사용자가 보낸 메시지
+    user_msg = data['text']
+
+    # 감정 점수 계산
+    score = sentiment_score(user_msg)
+
+    response = {"score": score}
+    return jsonify(response), 200
+
+
+# 문장을 정제해 줍니다
+@app.route('/refine_text', methods=['POST'])
+def on_refine_text():
+    """
+    문장을 정제해줍니다.
+    """
+    data = request.get_json()
+    d(f"/refine_text: {data}")
+
+    # 사용자가 보낸 메시지
+    user_msg = data['text']
+
+    # refined_text 맨 앞과 맨 뒤 " 제거
+    refined_text = refine_text(user_msg)[1:-1]
+    response = {"refined_text": refined_text}
+    return jsonify(response), 200
+
+
+@app.route('/safe_img', methods=['POST'])
+def safe_img():
+    if 'image' not in request.files:
+        return
+
+    image = request.files['image']
+
+    # 이미지 detect_image_obscenity() 함수로 전달
+    is_safe = detect_image_obscenity(image)
+    return jsonify(is_safe), 200
+
+
 def setup():
-    # API 키 설정
+    # OpenAI API 키 설정
     os.environ['OPENAI_API_KEY'] = val.OPENAI_API_KEY
+    # Google Cloud Natural Language API 설정
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = val.GOOGLE_CLOUD_API_KEY
 
     # 생성해야 할 폴더 리스트
     dirs = [
