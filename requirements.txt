@@ -2,7 +2,6 @@ flask
 flask-sslify
 langchain
 openai
-sentence_transformers
 tiktoken
 requests
 chromadb
@@ -12,3 +11,4 @@ chardet
 google-cloud-vision
 google-cloud-language
 PyKakao
+pysqlite3-binary
