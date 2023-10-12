@@ -16,11 +16,11 @@ def detect_image_obscenity(img, is_file=False):
     safe_search = response.safe_search_annotation
 
     # 혐오 점수
-    adult_likelihood = safe_search.adult
-    medical_likelihood = safe_search.medical
-    spoof_likelihood = safe_search.spoof
-    violence_likelihood = safe_search.violence
-    racy_likelihood = safe_search.racy
+    adult_likelihood = safe_search.adult.value
+    medical_likelihood = safe_search.medical.value
+    spoof_likelihood = safe_search.spoof.value
+    violence_likelihood = safe_search.violence.value
+    racy_likelihood = safe_search.racy.value
 
     # 결과 반환
     return {

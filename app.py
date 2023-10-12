@@ -1,8 +1,6 @@
 import os
 
-import openai
 from flask import Flask, send_file, request, jsonify
-from google.cloud import language_v1
 
 import n2p.utils as utils
 import val
@@ -71,16 +69,20 @@ def on_refine_text():
     return jsonify(response), 200
 
 
-@app.route('/safe_img', methods=['POST'])
-def safe_img():
-    if 'image' not in request.files:
-        return
-
-    image = request.files['image']
+@app.route('/img_obscenity', methods=['POST'])
+def img_obscenity():
+    """
+    이미지의 혐오 점수를 감지하고 유해 여부를 출력합니다.
+    이미지 형식: base64도 지원함
+    """
+    data = request.get_json()
+    d(f"/img_obscenity: {data}")
+    image = data['img']
 
     # 이미지 detect_image_obscenity() 함수로 전달
-    is_safe = detect_image_obscenity(image)
-    return jsonify(is_safe), 200
+    scores = detect_image_obscenity(image)
+    # 스코어 반환
+    return jsonify(scores), 200
 
 
 def setup():
