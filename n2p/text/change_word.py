@@ -85,6 +85,9 @@ def refine_tone(text):
 
 # main일 때
 if __name__ == "__main__":
+    import app
+    app.setup()
+
     # 예제 사용법
     text_to_refine = "어이가 없네"  # 이 문장을 부정적으로 설정하면 수정됩니다.
     refined_text = refine_tone(text_to_refine)
