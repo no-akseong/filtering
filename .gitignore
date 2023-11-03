@@ -194,3 +194,8 @@ openai_api_key.txt
 spheric-bloom-400505-835efbd95c3c.json
 rest_api_key.txt
 data/
+google_tts_api.txt
+# language, stt 포함
+gcp_api_key.json
+ETRI_api_key.txt
+simsimi_api_key.txt
