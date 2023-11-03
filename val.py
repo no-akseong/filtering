@@ -17,6 +17,11 @@ OPENAI_API_KEY_FILE = join(ROOT_DIR, "openai_api_key.txt")
 OPENAI_API_KEY = open(OPENAI_API_KEY_FILE).read()
 GOOGLE_CLOUD_API_KEY = join(ROOT_DIR, r"gcp_api_key.json")
 REST_API_KEY = join(ROOT_DIR, r"rest_api_key.txt")
+ETRI_ACCESS_KEY_FILE=join(ROOT_DIR, r"ETRI_api_key.txt")
+ETRI_ACCESS_KEY = open(ETRI_ACCESS_KEY_FILE).read()
+ETRI_DOC_KEY_FILE=join(ROOT_DIR, r"etri_doc_key.txt")
+ETRI_DOC_KEY=open(ETRI_DOC_KEY_FILE).read()
+
 
 # 리소스
 RES_DIR = join(ROOT_DIR, "res")
