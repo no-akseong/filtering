@@ -13,3 +13,6 @@ google-cloud-language
 PyKakao
 pysqlite3-binary
 pydub
+SpeechRecognition
+PyAudio
+flask_socketio

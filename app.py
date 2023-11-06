@@ -1,4 +1,5 @@
 import os
+from flask_socketio import SocketIO
 
 from flask import Flask, send_file, request, jsonify
 
@@ -8,9 +9,10 @@ from n2p.bot.agent import agent
 from n2p.img.safe_search import detect_image_obscenity
 from n2p.text.chat_gpt import sentiment_score, refine_text
 from n2p.utils import i, d
+from n2p.text.simsim import simsimi
 
 app = Flask(__name__)
-
+socketio = SocketIO(app)
 
 @app.route('/')
 def index():
@@ -27,11 +29,13 @@ def chat():
 
     # 사용자가 보낸 메시지
     user_msg = data['text']
+    # streaming = data.get('streaming', False)
+    # if streaming:
+    #     pass
+    # else:
     msg = chatbot(user_msg)['output']
-
     response = {"text": msg}
     return jsonify(response), 200
-
 
 @app.route('/sentiment', methods=['POST'])
 def check_sentiment():
@@ -45,9 +49,10 @@ def check_sentiment():
     user_msg = data['text']
 
     # 감정 점수 계산
-    score = sentiment_score(user_msg)
+    google_score = sentiment_score(user_msg)
+    simsimi_score = simsimi(user_msg)
 
-    response = {"score": score}
+    response = {"google_score": google_score, "simsimi_score": simsimi_score}
     return jsonify(response), 200
 
 
@@ -113,4 +118,5 @@ if __name__ == '__main__':
 
     i(f"서버가 {val.PORT}포트에서 시작됩니다.")
     app.run(debug=True, host='0.0.0.0', port=val.PORT)
+    socketio.run(app, port=22221)
     i(f"서버 종료됨")

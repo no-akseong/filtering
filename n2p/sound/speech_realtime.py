@@ -25,7 +25,9 @@
 import speech_recognition as sr
 
 import os
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r'C:\Users\gram\Desktop\project\fiitering\filltering\spheric-bloom-400505-835efbd95c3c.json'
+
+import app
+app.setup()
 
 r=sr.Recognizer()
 with sr.Microphone() as source:

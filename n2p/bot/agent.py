@@ -1,19 +1,33 @@
 import os
+from typing import Any
 
 from langchain.agents import initialize_agent
+from langchain.callbacks.base import BaseCallbackHandler
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.chat_models import ChatOpenAI
+from langchain.schema import LLMResult
 
 from n2p.bot.tools import qa
 import val
 import time
 from n2p.utils import i, d
 
-def agent():
+class StreamHandler(BaseCallbackHandler):
+    def __init__(self, stream_callback):
+        self.stream_callback = stream_callback
+
+    def on_llm_new_token(self, token: str, **kwargs) -> None:
+        self.stream_callback(token)
+
+    def on_llm_end(self, response: LLMResult, **kwargs: Any) -> Any:
+        self.stream_callback("#END#")
+
+
+def agent(stream_callback=None):
     # 현재 년도
     year = time.localtime().tm_year
     os.environ['OPENAI_API_KEY'] = val.OPENAI_API_KEY
-    llm = ChatOpenAI(temperature=0)
+    llm = ChatOpenAI(temperature=0, callbacks=[StreamHandler(stream_callback)])
     tools = [qa]
 
     # conversational agent memory
