@@ -5,6 +5,7 @@ from os.path import join, abspath, dirname, sep
 PROJECT_NAME = "n2p"
 LOG_LEVEL = "d"
 PORT = 11110
+ETRI_SCHOOL_DOC_ID = "6f0052c3-fcc6-433f-a51c-65276633f2d8_AAEEF08E7F0001015D83C3F600017534"
 
 # 루트
 ROOT_DIR = os.path.dirname(abspath(__file__))
@@ -27,6 +28,7 @@ SIMSIMI_API_KEY = open(SIMSIMI_API_KEY_FILE).read()
 # 리소스
 RES_DIR = join(ROOT_DIR, "res")
 RES_DOCS_DIR = join(RES_DIR, "docs")
+RES_HWP_DIR = join(RES_DIR, "hwp")
 
 DATA_DIR = join(ROOT_DIR, "data")
 CONVERSATIONS_DIR = join(DATA_DIR, "conversations")

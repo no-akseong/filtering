@@ -1,24 +1,24 @@
-from typing import Any
+import os
 
 from langchain.chains import RetrievalQA
-from langchain.chains.retrieval_qa.base import BaseRetrievalQA
 from langchain.document_loaders import DirectoryLoader
 from langchain.document_loaders import TextLoader
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.llms import OpenAI
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.tools import BaseTool
 from langchain.vectorstores import Chroma
 
 import n2p.utils as utils
-from n2p.utils import i, d
 import val
-import os
+from n2p.utils import i
 
 os.environ["OPENAI_API_KEY"] = val.OPENAI_API_KEY
 
 qa_chain = None
 
+'''
+벡터DB에 있는 모든 문서들을 검색해서 
+'''
 
 def get_qa_chain():
     global qa_chain
@@ -70,28 +70,3 @@ def create_qa_chain():
         retriever=retriever,
     )
     return retrieval_qa_chain
-
-
-class QATool(BaseTool):
-    name = "Retrieval QA"
-    description = "Useful for when you need to answer questions about school related things."
-
-    def __init__(self, **data: Any):
-        super().__init__(**data)
-
-    def _run(self, query: str):
-        return get_qa_chain().run(query)
-
-    def _arun(self, webpage: str):
-        raise NotImplementedError("This tool does not support async")
-
-    def details(self, llm_response):
-        print(llm_response["result"])
-        print("\n\nSources:")
-        for source in llm_response["source_documents"]:
-            print(source.metadata["source"])
-
-
-# main
-if __name__ == "__main__":
-    print("hi")

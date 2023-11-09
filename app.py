@@ -6,8 +6,10 @@ from flask import Flask, send_file, request, jsonify
 import n2p.utils as utils
 import val
 from n2p.bot.agent import agent
+from n2p.img import face_blur
 from n2p.img.safe_search import detect_image_obscenity
 from n2p.text.chat_gpt import sentiment_score, refine_text
+from n2p.text.qanal import qanal
 from n2p.utils import i, d
 from n2p.text.simsim import simsimi
 
@@ -81,13 +83,46 @@ def img_obscenity():
     이미지 형식: base64도 지원함
     """
     data = request.get_json()
-    d(f"/img_obscenity: {data}")
     image = data['img']
 
     # 이미지 detect_image_obscenity() 함수로 전달
     scores = detect_image_obscenity(image)
     # 스코어 반환
     return jsonify(scores), 200
+
+@app.route('/blur_faces', methods=['POST'])
+def blur_faces():
+    """
+    얼굴을 블러 처리합니다.
+    이미지 형식: base64
+    """
+    data = request.get_json()
+    image = data['img']
+    # base64 encoding인 image_data에서 format을 추출
+    header, encoded = image.split(",", 1)
+    _, format = header.split(";")[0].split(":")[1].split("/")
+    print("img_format", format)
+
+    img_data = image.split(",")[1]
+
+    # blur_faces() 함수로 전달
+    blurred_image = face_blur.blur_faces(img_data, format)
+    response = {"img": blurred_image}
+
+    # 블러 처리된 이미지 반환
+    return jsonify(response), 200
+
+@app.route('/qanal', methods=['POST'])
+def blur_faces():
+    """
+    고객의 질문을 분석합니다
+    """
+    data = request.get_json()
+    question = data['q']
+    response = qanal(question)
+
+    # 블러 처리된 이미지 반환
+    return jsonify(response), 200
 
 
 def setup():
@@ -104,6 +139,7 @@ def setup():
         val.DATA_DIR,
         val.CONVERSATIONS_DIR,
         val.DOCS_VECTOR_DB_DIR,
+        val.RES_HWP_DIR
     ]
 
     # 폴더 생성

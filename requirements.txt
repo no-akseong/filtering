@@ -16,3 +16,6 @@ pydub
 SpeechRecognition
 PyAudio
 flask_socketio
+opencv-python
+Pillow
+urllib3
