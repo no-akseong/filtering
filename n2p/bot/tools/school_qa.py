@@ -23,13 +23,6 @@ class SchoolQATool(BaseTool):
     def _arun(self, webpage: str):
         raise NotImplementedError("This tool does not support async")
 
-    def details(self, llm_response):
-        print(llm_response["result"])
-        print("\n\nSources:")
-        for source in llm_response["source_documents"]:
-            print(source.metadata["source"])
-
-
 # main
 if __name__ == "__main__":
     print(get_qa_chain().run("한국초등학교 전화번호 알려줘"))

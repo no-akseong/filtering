@@ -6,12 +6,14 @@ from flask import Flask, send_file, request, jsonify
 import n2p.utils as utils
 import val
 from n2p.bot.agent import agent
+from n2p.bot.taskanal_agent import taskanal_agent
 from n2p.img import face_blur
-from n2p.img.safe_search import detect_image_obscenity
-from n2p.text.chat_gpt import sentiment_score, refine_text
+from n2p.img.google_img import detect_image_obscenity
+from n2p.text.openai import refine_text
+from n2p.text.google_nl import sentiment_score
 from n2p.text.qanal import qanal
 from n2p.utils import i, d
-from n2p.text.simsim import simsimi
+from n2p.text.simsimi import bad_score
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -52,7 +54,7 @@ def check_sentiment():
 
     # 감정 점수 계산
     google_score = sentiment_score(user_msg)
-    simsimi_score = simsimi(user_msg)
+    simsimi_score = bad_score(user_msg)
 
     response = {"google_score": google_score, "simsimi_score": simsimi_score}
     return jsonify(response), 200
@@ -80,13 +82,17 @@ def on_refine_text():
 def img_obscenity():
     """
     이미지의 혐오 점수를 감지하고 유해 여부를 출력합니다.
-    이미지 형식: base64도 지원함
+    이미지 형식: base64
     """
     data = request.get_json()
     image = data['img']
 
+    # base64 encoding에서 data 추출
+    image = image.split(',')[1]
+
     # 이미지 detect_image_obscenity() 함수로 전달
     scores = detect_image_obscenity(image)
+    d(scores)
     # 스코어 반환
     return jsonify(scores), 200
 
@@ -113,13 +119,26 @@ def blur_faces():
     return jsonify(response), 200
 
 @app.route('/qanal', methods=['POST'])
-def blur_faces():
+def on_qanal():
     """
     고객의 질문을 분석합니다
     """
     data = request.get_json()
     question = data['q']
     response = qanal(question)
+
+    # 블러 처리된 이미지 반환
+    return jsonify(response), 200
+
+@app.route('/taskanal', methods=['POST'])
+def taskanal():
+    """
+    고객의 질문이 어떤 부서로 연결되어야 하는지 분석합니다 (연락처가 반환됨)
+    """
+    data = request.get_json()
+    text = data['text']
+    response = {'contact': taskanal_bot(text)['output']}
+
 
     # 블러 처리된 이미지 반환
     return jsonify(response), 200
@@ -136,10 +155,12 @@ def setup():
         val.LOG_DIR,
         val.RES_DIR,
         val.RES_DOCS_DIR,
+        val.RES_TASKDOCS_DIR,
         val.DATA_DIR,
         val.CONVERSATIONS_DIR,
         val.DOCS_VECTOR_DB_DIR,
-        val.RES_HWP_DIR
+        val.RES_HWP_DIR,
+        val.TASKANAL_DB_DIR
     ]
 
     # 폴더 생성
@@ -151,6 +172,7 @@ if __name__ == '__main__':
     setup()
     # 챗봇 생성
     chatbot = agent()
+    taskanal_bot = taskanal_agent()
 
     i(f"서버가 {val.PORT}포트에서 시작됩니다.")
     app.run(debug=True, host='0.0.0.0', port=val.PORT)

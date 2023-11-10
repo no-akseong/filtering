@@ -18,17 +18,11 @@ def face_locs(img):
     """
     openApiURL = "http://aiopen.etri.re.kr:8000/FaceDeID"
     accessKey = val.ETRI_ACCESS_KEY
-    # imageFilePath = "ppl.jpeg"
     type = "1"  # 얼굴 비식별화 기능 "1"로 설정
-
-    # file = open(imageFilePath, "rb")
-    # imageContents = base64.b64encode(file.read()).decode("utf8")
-    imageContents = img
-
     requestJson = {
         "argument": {
             "type": type,
-            "file": imageContents
+            "file": img
         }
     }
 
@@ -39,7 +33,6 @@ def face_locs(img):
         headers={"Content-Type": "application/json; charset=UTF-8", "Authorization": accessKey},
         body=json.dumps(requestJson)
     )
-    print(response.data)
 
     # 얼굴 위치 리스트
     locs = []

@@ -1,21 +1,11 @@
 import openai
-from google.cloud import language_v1
-
-
-def sentiment_score(text):
-    client = language_v1.LanguageServiceClient()
-    # Google Cloud Natural Language API를 사용하여 감정 점수 판단
-    document = language_v1.Document(content=text, type_=language_v1.Document.Type.PLAIN_TEXT)
-    sentiment = client.analyze_sentiment(request={"document": document}).document_sentiment
-    return sentiment.score
-
 
 def refine_text(text):
     # 만약 텍스트가 부정적이라면, openai에게 어조를 개선하도록 요청합니다.
-    system_prompt = f'''주어진 문장에서 부정표현과 욕설을 제거하고, 순화한 문장으로 바꿔서 존댓말과 이쁜말로 만들어주세요.
+    system_prompt = f'''주어진 문장에서 부정표현과 욕설을 제거하고, 
+D순화한 문장으로 바꿔서 존댓말과 이쁜말로 만들어주세요.
 
 밑의 백틱 3개로 감싼곳은 순화대화의 예시 대화입니다.
-
 ```
 원래 말투: "이게 뭐야? 완전 별로잖아!"
 순화된 말투: "이건 어때요? 아쉽네요."

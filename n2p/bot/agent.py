@@ -24,11 +24,9 @@ class StreamHandler(BaseCallbackHandler):
 
 
 def agent(stream_callback=None):
-    # 현재 년도
-    year = time.localtime().tm_year
     os.environ['OPENAI_API_KEY'] = val.OPENAI_API_KEY
-    llm = ChatOpenAI(temperature=0, callbacks=[StreamHandler(stream_callback)])
-    tools = [school_qa, calculator, task_analyzer]
+    llm = ChatOpenAI(temperature=0)
+    tools = [school_qa, calculator, search]
 
     # conversational agent memory
     memory = ConversationBufferWindowMemory(
@@ -52,21 +50,20 @@ def agent(stream_callback=None):
     # If Assistant can't find the answer using search tool and there're some links to get access, Assistant should use "get_webpage" tool to get the webpage content.
     fixed_prompt = f'''Assistant is a large language model trained by OpenAI.
 
-    Assistant is designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, Assistant is able to generate human-like text based on the input it receives, allowing it to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
+Assistant is designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, Assistant is able to generate human-like text based on the input it receives, allowing it to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
 
-    Assistant doesn't know anything about school related things so, should use some tools for questions about these topics. 
+Assistant doesn't know anything about school related things so, should use some tools for questions about these topics. 
 
-    Assistant should use "School QA" tool to find school related information.
-    Assistant should use "Calculator" tool to calculate math problems.
-    
-    Assistant is constantly learning and improving, and its capabilities are constantly evolving. It is able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. Additionally, Assistant is able to generate its own text based on the input it receives, allowing it to engage in discussions and provide explanations and descriptions on a wide range of topics.
+Assistant should use "School QA" tool to find school related information.
+Assistant should use "Calculator" tool to calculate math problems.
+Assistant should use "Search" tool to find ETRI(한국전자통신연구원) related things.
 
-    Overall, Assistant is a powerful system that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether you need help with a specific question or just want to have a conversation about a particular topic, Assistant is here to assist.
+Assistant is constantly learning and improving, and its capabilities are constantly evolving. It is able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. Additionally, Assistant is able to generate its own text based on the input it receives, allowing it to engage in discussions and provide explanations and descriptions on a wide range of topics.
 
-    Assistant should answer in Korean. Please answer with nice words and polite words.
+Overall, Assistant is a powerful system that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether you need help with a specific question or just want to have a conversation about a particular topic, Assistant is here to assist.
 
-    Current year is {year}.
-    '''
+Assistant should answer in Korean. Please answer with nice words and polite words.
+'''
 
     conversational_agent.agent.llm_chain.prompt.messages[0].prompt.template = fixed_prompt
     return conversational_agent
@@ -77,5 +74,6 @@ if __name__ == '__main__':
     app.setup()
     chatbot = agent()
     # msg = chatbot("학생부좀 연결해 주세요")
-    msg = chatbot("23만원을 12개월 내면 총 얼마죠?")
+    # msg = chatbot("23만원을 12개월 내면 총 얼마죠?")
+    msg = chatbot("ETRI에서 제공하는 API는 뭐가 있나요?")
     print(f"챗봇: {msg['output']}")

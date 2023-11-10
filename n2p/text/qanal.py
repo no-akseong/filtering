@@ -20,5 +20,14 @@ def qanal(question):
         body=json.dumps(requestJson)
     )
 
+    print(response.data)
     response_data = json.loads(response.data.decode('utf-8'))
     return response_data
+
+
+# main
+if __name__ == '__main__':
+    import app
+    app.setup()
+    question = "코로나19는 어떻게 전파되나요?"
+    print(qanal(question))
