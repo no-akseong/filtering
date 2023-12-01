@@ -1,3 +1,4 @@
+from n2p.text.qanal import qanal, extract_category
 import os
 from flask_socketio import SocketIO
 
@@ -124,24 +125,38 @@ def on_qanal():
     고객의 질문을 분석합니다
     """
     data = request.get_json()
-    question = data['q']
+    question = data['text']
     response = qanal(question)
+    # extracted_category = extract_category(response)
 
     # 블러 처리된 이미지 반환
     return jsonify(response), 200
 
-@app.route('/taskanal', methods=['POST'])
-def taskanal():
+@app.route('/contact-guide', methods=['POST'])
+def on_contact_guide():
     """
-    고객의 질문이 어떤 부서로 연결되어야 하는지 분석합니다 (연락처가 반환됨)
+    고객의 질문이 어떤 부서로 연결되어야 하는지 분석합니다
     """
     data = request.get_json()
     text = data['text']
-    response = {'contact': taskanal_bot(text)['output']}
-
+    response = {'contact': contact_guide(text)['output']}
 
     # 블러 처리된 이미지 반환
     return jsonify(response), 200
+
+# @app.route('/taskanal', methods=['POST'])
+# def taskanal():
+#     """
+#     고객의 질문이 어떤 부서로 연결되어야 하는지 분석합니다 (연락처가 반환됨)
+#     """
+#     data = request.get_json()
+#     text = data['text']
+#     # response = {'contact': taskanal_bot(text)['output']}
+#
+#
+#
+#     # 블러 처리된 이미지 반환
+#     return jsonify(response), 200
 
 
 def setup():
@@ -172,7 +187,7 @@ if __name__ == '__main__':
     setup()
     # 챗봇 생성
     chatbot = agent()
-    taskanal_bot = taskanal_agent()
+    contact_guide = taskanal_agent()
 
     i(f"서버가 {val.PORT}포트에서 시작됩니다.")
     app.run(debug=True, host='0.0.0.0', port=val.PORT)

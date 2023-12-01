@@ -25,7 +25,7 @@ class StreamHandler(BaseCallbackHandler):
 
 def agent(stream_callback=None):
     os.environ['OPENAI_API_KEY'] = val.OPENAI_API_KEY
-    llm = ChatOpenAI(temperature=0)
+    llm = ChatOpenAI(temperature=0,model_name="gpt-4-1106-preview")
     tools = [school_qa, calculator, search]
 
     # conversational agent memory
